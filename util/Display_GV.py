@@ -19,7 +19,7 @@ class Display_GV(Tkinter.Canvas):
     showEdges = True
 
     def __init__(self, parent):
-        size = (self.minDist ** 2 + self.minSize * 2) + self.minDist ** 2 + self.minSize
+        size = (self.minDist ** 2 + self.minSize * 2) + self.minDist ** 2 + self.minSize ** 2
         Tkinter.Canvas.__init__(self, parent, width=size, height=size)
 
         baseName ="Graph_Data/"
@@ -43,6 +43,7 @@ class Display_GV(Tkinter.Canvas):
         self.tempEdges = []
         self.createNodes()
         self.createEdges()
+        self.drawNodes()
 
     def interact(self, event):
         for node in self.builtNodes.itervalues():
@@ -53,7 +54,7 @@ class Display_GV(Tkinter.Canvas):
                     self.analyzeEdges(node)
                     self.drawEdges(self.tempEdges)
                     self.activeNode = node
-                    self.tempNodes.append(self.create_oval(node.loc, fill="blue"))
+                    self.tempNodes.append((self.create_oval(node.loc, fill="blue"), node))
                 return
         if self.tempNodes or self.tempEdges:
             self.clearTemp()
@@ -62,7 +63,7 @@ class Display_GV(Tkinter.Canvas):
         self.showEdges = not self.showEdges
         self.clearTemp()
         for edge in self.builtEdges:
-            self.reDraw(self) if self.showEdges else self.delete(edge.cID)
+            if not self.showEdges: self.delete(edge.cID)
 
     def findEdges(self, node):
         for edge in self.parser.graphData[2]:
@@ -83,13 +84,14 @@ class Display_GV(Tkinter.Canvas):
                 if edgeContents == nextContents[::-1]:
                     next.color = color = "orange"
                     unprocessed.remove(next)
-            self.tempNodes.append(self.create_oval(node == edge.source and edge.target.loc or edge.source.loc, fill=color))
+            nNode = node == edge.source and edge.target or edge.source
+            self.tempNodes.append((self.create_oval(nNode.loc, fill=color), nNode))
             edge.color = color
 
     def clearTemp(self):
         self.activeNode = None
         for node in self.tempNodes:
-            self.delete(node)
+            self.delete(node[0])
         self.tempNodes = []
         for edge in self.tempEdges:
             self.delete(edge.cID)

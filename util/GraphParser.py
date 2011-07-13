@@ -24,24 +24,27 @@ class GraphParser:
     def parse(self, file, extension):
         self.graphData = ['',{},[]]
         if extension == '.gexf':
-            for line in file:
-                line = line.rstrip().lstrip()
-                if line.startswith("<description>"):
-                    line.replace('<description>', '')
-                    line.replace('</description>', '')
-                    self.graphData[0] = line
-                elif line.startswith('<node '):
-                    info = line.split(' ')
+            self.gexfParser(file)
 
-                    name = info[2][7:].replace('"', '')
-                    id = int(info[1][4:].replace('"', ''))
-                    self.graphData[1][id] = Node.Node(id, name, 0)
-                elif line.startswith('<edge '):
-                    info = line.split(' ')
+    def gexfParser(self, file):
+        for line in file:
+            line = line.rstrip().lstrip()
+            if line.startswith("<description>"):
+                line.replace('<description>', '')
+                line.replace('</description>', '')
+                self.graphData[0] = line
+            elif line.startswith('<node '):
+                info = line.split(' ')
 
-                    for data in info:
-                        if data.startswith('source'):
-                            source = int(data[8:].replace('"', ''))
-                        elif data.startswith('target'):
-                            target = int(data[8:].replace('"', ''))
-                    self.graphData[2].append(Edge.Edge(self.graphData[1][source], self.graphData[1][target]))
+                name = info[2][7:].replace('"', '')
+                id = int(info[1][4:].replace('"', ''))
+                self.graphData[1][id] = Node.Node(id, name, 0)
+            elif line.startswith('<edge '):
+                info = line.split(' ')
+
+                for data in info:
+                    if data.startswith('source'):
+                        source = int(data[8:].replace('"', ''))
+                    elif data.startswith('target'):
+                        target = int(data[8:].replace('"', ''))
+                self.graphData[2].append(Edge.Edge(self.graphData[1][source], self.graphData[1][target]))
