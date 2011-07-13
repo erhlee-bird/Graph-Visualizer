@@ -4,6 +4,18 @@
 # Creation Date: 07/12/11                                  #
 # Project: Graph-Visualizer                                #
 ############################################################
+
+Version 0.04:
+    Modified 07/13/11
+    :I went and corrected the color coding algorithm and
+    changed the storage structures for the temporary marks.
+    :Fixed the Nodes and Edges so that they can reDraw
+    themselves
+    :Got down a good method of calculating the canvas size.
+    :Gonna work a bit on the UI. So far I have the graph
+    drawn and interactable in a slightly useless and arcane
+    manner.
+
 Version 0.03:
     Modified 07/12/11
     :So I realized I should have split up the info storage

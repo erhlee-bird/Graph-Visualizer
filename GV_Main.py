@@ -10,9 +10,6 @@ from util import Display_GV
 class GV_Main:
     """Main class for the Graph-Visualizer Project"""
 
-    minDist = 20
-    minSize = 6
-
     def __init__(self):
         self.initGUI()
 
@@ -23,8 +20,7 @@ class GV_Main:
         frame = Tkinter.Frame(root)
         frame.pack(side=Tkinter.RIGHT)
 
-        size = (self.minDist ** 2 + self.minSize * 2) + self.minDist ** 2 + self.minSize
-        self.canvas = Display_GV.Display_GV(self.minDist, self.minSize, root, width=size, height=size)
+        self.canvas = Display_GV.Display_GV(root)
         self.canvas.pack(side=Tkinter.LEFT)
 
         toggleButton = Tkinter.Button(frame)
