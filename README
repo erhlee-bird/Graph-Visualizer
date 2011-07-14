@@ -5,6 +5,30 @@
 # Project: Graph-Visualizer                                #
 ############################################################
 
+Version 0.06:
+    Modified 07/14/11
+    : Again some heavy optimization. Used the built in
+    canvas overlap methods to reduce cost.
+    : Fixed some little GUI bugs.
+        : Added Panning to the interface. Click and drag.
+        : Fixed some weird sizing issues.
+        : Overlap and Mouse Detection algorithms are using
+        builtin Tkinter functions and are showing huge
+        improvements.
+        : Added a failsafe for when the program can't draw
+        the entire graph without overlaps. (yeast.gexf)
+    : Added different formats of graph organization.
+        : Random - Purely random assortment.
+        : Size - More heavily connected nodes gravitate
+        towards the center.
+        : Hyperbolic - Discovered by accident, but when
+        plotted, smaller nodes gravitate to the corners
+        and heavier nodes end up in the center.
+    : Next step is to work on a Node Explorer that will
+    work in conjunction with the Mouse Over event. Will
+    reveal the node in question and list all the edges
+    and connected nodes.
+
 Version 0.05:
     Modified 07/14/11
     : Changes were made to optimize the data storage. All

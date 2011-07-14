@@ -44,9 +44,11 @@ class GraphParser:
 
                 for data in info:
                     if data.startswith('source'):
-                        source = int(data[8:].replace('"', ''))
+                        cutPoint = data[8:].index('"')
+                        source = int(data[8:][:cutPoint])
                     elif data.startswith('target'):
-                        target = int(data[8:].replace('"', ''))
+                        cutPoint = data[8:].index('"')
+                        target = int(data[8:][:cutPoint])
                 edge = Edge.Edge(self.graphData[1][source], self.graphData[1][target])
                 if not target in self.graphData[1][source].connections:
                     self.graphData[1][source].connections[target] = []

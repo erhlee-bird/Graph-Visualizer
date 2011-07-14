@@ -48,4 +48,4 @@ class Node:
 
     def reDraw(self, canvas):
         canvas.delete(self.cID)
-        canvas.create_oval(self.loc, fill=self.color)
+        self.cID = canvas.create_oval(self.loc, fill=self.color)

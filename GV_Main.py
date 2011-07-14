@@ -20,13 +20,18 @@ class GV_Main:
         frame = Tkinter.Frame(root)
         frame.pack(side=Tkinter.RIGHT)
 
-        self.canvas = Display_GV.Display_GV(root)
-        self.canvas.pack(side=Tkinter.LEFT)
+        canvas = Display_GV.Display_GV(root)
+        canvas.pack(expand=True, fill=Tkinter.BOTH, side=Tkinter.LEFT)
 
         toggleButton = Tkinter.Button(frame)
         toggleButton.configure(text="Toggle Edges", background="orange")
         toggleButton.pack(side=Tkinter.TOP)
-        toggleButton.bind("<Button-1>", self.canvas.toggleEdges)
+        toggleButton.bind("<Button-1>", canvas.toggleEdges)
+
+        recenterButton = Tkinter.Button(frame)
+        recenterButton.configure(text="Recenter Canvas", background="red")
+        recenterButton.pack(side=Tkinter.BOTTOM)
+        recenterButton.bind("<Button-1>", canvas.centerScreen)
 
         root.mainloop()
 

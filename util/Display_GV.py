@@ -13,26 +13,25 @@ import random
 class Display_GV(Tkinter.Canvas):
     """The Canvas in charge of all the visual graph effects"""
 
+    sizer = 3
     minDist = 20
     minSize = 5
     activeNode = None
     showEdges = True
 
     def __init__(self, parent):
-        size = (self.minDist ** 2 + self.minSize * 2) + self.minDist ** 2 + self.minSize ** 2
-        Tkinter.Canvas.__init__(self, parent, width=size, height=size)
+        self.size = ((self.minDist ** 2 + self.minSize * self.sizer) + self.minDist ** 2 + self.minSize ** 2)
+        Tkinter.Canvas.__init__(self, parent, width=self.size, height=self.size)
 
         baseName ="Graph_Data/"
-        fileName = "photoviz dynamic.gexf"#"example.gexf"
+        fileName = "photoviz dynamic.gexf"#"yeast.gexf"#"photoviz dynamic.gexf"#"example.gexf"
         self.parser = GraphParser.GraphParser(''.join([baseName,fileName]))
 
-        self.centerPoint = self.minDist ** 2 + self.minSize * 2
-        self.scan_mark(self.centerPoint, self.centerPoint)
-        self.scan_dragto(self.centerPoint, self.centerPoint)
+        self.centerPoint = self.minDist ** 2 + self.minSize ** self.sizer
 
         self.bind("<Motion>", self.interact)
-        #self.bind("<Button-1>", lambda(evt): self.scan_mark(evt.x, evt.y))
-        #self.bind("<B1-Motion>", lambda(evt): self.scan_dragto(evt.x, evt.y, 2))
+        self.bind("<Button-1>", lambda(evt): self.scan_mark(evt.x, evt.y))
+        self.bind("<B1-Motion>", lambda(evt): self.scan_dragto(evt.x, evt.y, 1))
 
         self.createGrid()
 
@@ -50,7 +49,10 @@ class Display_GV(Tkinter.Canvas):
             if node in self.builtNodes: continue
             node.numEdges = len(node.connections)
             nodeCoords = None
+            self.failCounter = 0
             while not nodeCoords or self.overlap(nodeCoords):
+                if self.failCounter > 25:
+                    break
                 nodeCoords = self.mapNode(node.numEdges)
             node.build(nodeCoords, self.create_oval(nodeCoords, fill=node.color))
             self.builtNodes[node.id] = node
@@ -62,26 +64,48 @@ class Display_GV(Tkinter.Canvas):
             if not edge.cID: continue
             self.builtEdges.append(edge)
 
+    def centerScreen(self, event):
+        cX, cY = map(int, self.convertCanvasCoords((self.centerPoint,) * 2))
+        self.scan_mark(0, 0)
+        self.scan_dragto(cX - self.centerPoint, cY - self.centerPoint, 1)
+
     def intCheck(self, obj):
         return type(obj).__name__ == "int"
 
-    def randLoc(self, num):
-        if not num: num = 1
+    def randLocRandom(self, num):
+        numBound = self.minDist ** 2 + self.minSize ** self.sizer
+        return random.randint(-numBound, numBound)
+
+    def randLocSize(self, num):
+        if not num: num = 0.5
         diff = num / 5.0
         if diff < 1: diff = 1
-        return random.randint(-(self.minDist ** 2), self.minDist ** 2) / diff
+        numBound = self.minDist ** 2 + self.minSize ** self.sizer
+        return random.randint(-int(numBound / diff), int(numBound / diff))
+
+    def randLocHyperbolic(self, num):
+        if not num: num = 0.5
+        diff = num / 5.0
+        if diff < 1: diff = 1
+        mod = self.minSize ** self.sizer
+        startCheck = self.minSize * self.sizer ** 2 + self.minDist - num * 2
+        endCheck = (self.minDist ** 2 + mod) / diff
+        sign = -1 if random.randint(0,1) == 0 else 1
+        return sign * random.randint(int(startCheck), int(endCheck))
 
     def mapNode(self, num):
-        newX, newY = self.centerPoint + self.randLoc(num), self.centerPoint + self.randLoc(num)
+        # Determine which Graph you want to appear
+        # self.randLocRandom, self.randLocSize, self.randLocHyperbolic
+        newX, newY = self.centerPoint + self.randLocSize(num), self.centerPoint + self.randLocSize(num)
         modD = self.minSize + num
         return (newX, newY, newX + modD, newY + modD)
 
     def overlap(self, coords):
-        nodeC = (coords[0] + (coords[2] - coords[0]) / 2, coords[1] + (coords[3] - coords[1]) / 2)
-        for node in self.builtNodes.itervalues():
-            if node.findDistBetween(nodeC) < self.minDist + node.radius + self.minSize:
-                return True
-        return False
+        x, y, dx, dy = coords
+        overlaps = len(self.find_overlapping(x, y, dx, dy))
+        if overlaps:
+            self.failCounter += 1
+        return overlaps
 
     def drawNodes(self):
         for node in self.builtNodes.itervalues():
@@ -93,19 +117,19 @@ class Display_GV(Tkinter.Canvas):
             edge.reDraw(self)
 
     def reset(self):
-        if self.activeNode:
-            list = []
-            for edges in self.activeNode.connections.itervalues():
-                for edge in edges:
-                    if self.intCheck(edge): continue
-                    edge.color = "gray"
-                    edge.source.color = "red"
-                    edge.target.color = "red"
-                    self.delete(edge.cID)
-                    if self.showEdges:
-                        list.append(edge)
-            self.drawEdges(list)
-            self.drawNodes()
+        list = []
+        for edges in self.activeNode.connections.itervalues():
+            for edge in edges:
+                if self.intCheck(edge): continue
+                edge.color = "gray"
+                edge.source.color = "red"
+                edge.target.color = "red"
+                self.delete(edge.cID)
+                if self.showEdges:
+                    list.append(edge)
+        self.activeNode.color = "red"
+        self.drawEdges(list)
+        self.drawNodes()
         self.activeNode = None
 
     def toggleEdges(self, event):
@@ -117,16 +141,24 @@ class Display_GV(Tkinter.Canvas):
                 self.delete(edge.cID)
         self.drawNodes()
 
+    def convertCanvasCoords(self, coords):
+        return (self.canvasx(coords[0]), self.canvasy(coords[1]))
+
     # Optimizable Methods
     def interact(self, event):
-        for node in self.builtNodes.itervalues():
-            if node.findDistBetween((event.x, event.y)) <= node.radius:
-                if not self.activeNode:
-                    self.activeNode = node
-                    self.analyzeConnections(node)
-                return
+        x, y = self.convertCanvasCoords((event.x, event.y))
+        overlaps = self.find_overlapping(x, y, x, y)
         if self.activeNode:
-            self.reset()
+            if len(overlaps) == 0:
+                self.reset()
+        else:
+            for obj in overlaps:
+                if not self.type(obj) == "oval": continue
+                for node in self.builtNodes.itervalues():
+                    if obj == node.cID:
+                        self.activeNode = node
+                        self.analyzeConnections(node)
+                        return
 
     def analyzeConnections(self, node):
         for edges in node.connections.itervalues():
