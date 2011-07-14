@@ -47,4 +47,11 @@ class GraphParser:
                         source = int(data[8:].replace('"', ''))
                     elif data.startswith('target'):
                         target = int(data[8:].replace('"', ''))
-                self.graphData[2].append(Edge.Edge(self.graphData[1][source], self.graphData[1][target]))
+                edge = Edge.Edge(self.graphData[1][source], self.graphData[1][target])
+                if not target in self.graphData[1][source].connections:
+                    self.graphData[1][source].connections[target] = []
+                if not source in self.graphData[1][target].connections:
+                    self.graphData[1][target].connections[source] = []
+                self.graphData[1][source].connections[target].append(edge)
+                self.graphData[1][target].connections[source].append(edge)
+                self.graphData[2].append(edge)

@@ -36,79 +36,43 @@ class Display_GV(Tkinter.Canvas):
 
         self.createGrid()
 
+    # Finished Methods
     def createGrid(self):
         self.builtNodes = {}
         self.builtEdges = []
         self.tempNodes = []
-        self.tempEdges = []
         self.createNodes()
         self.createEdges()
         self.drawNodes()
 
-    def interact(self, event):
-        for node in self.builtNodes.itervalues():
-            if node.findDistBetween((event.x, event.y)) <= node.radius:
-                if not self.activeNode:
-                    self.clearTemp()
-                    self.findEdges(node)
-                    self.analyzeEdges(node)
-                    self.drawEdges(self.tempEdges)
-                    self.activeNode = node
-                    self.tempNodes.append((self.create_oval(node.loc, fill="blue"), node))
-                return
-        if self.tempNodes or self.tempEdges:
-            self.clearTemp()
+    def createNodes(self):
+        for node in self.parser.graphData[1].itervalues():
+            if node in self.builtNodes: continue
+            node.numEdges = len(node.connections)
+            nodeCoords = None
+            while not nodeCoords or self.overlap(nodeCoords):
+                nodeCoords = self.mapNode(node.numEdges)
+            node.build(nodeCoords, self.create_oval(nodeCoords, fill=node.color))
+            self.builtNodes[node.id] = node
 
-    def toggleEdges(self, event):
-        self.showEdges = not self.showEdges
-        self.clearTemp()
-        for edge in self.builtEdges:
-            if not self.showEdges: self.delete(edge.cID)
-
-    def findEdges(self, node):
+    def createEdges(self):
         for edge in self.parser.graphData[2]:
-            if node in (edge.source, edge.target):
-                self.tempEdges.append(edge)
-
-    def analyzeEdges(self, node):
-        # Green for one way outwards, Orange for mutual, Yellow for one way inwards
-        unprocessed = list(self.tempEdges)
-        while len(unprocessed) > 0:
-            edge = unprocessed.pop(0)
-            if self.intCheck(edge): continue
-            edgeContents = (edge.source, edge.target)
-            color = "green" if node == edge.source else "yellow"
-            for next in unprocessed:
-                if self.intCheck(next): continue
-                nextContents = (next.source, next.target)
-                if edgeContents == nextContents[::-1]:
-                    next.color = color = "orange"
-                    unprocessed.remove(next)
-            nNode = node == edge.source and edge.target or edge.source
-            self.tempNodes.append((self.create_oval(nNode.loc, fill=color), nNode))
-            edge.color = color
-
-    def clearTemp(self):
-        self.activeNode = None
-        for node in self.tempNodes:
-            self.delete(node[0])
-        self.tempNodes = []
-        for edge in self.tempEdges:
-            self.delete(edge.cID)
-        self.tempEdges = []
-        if self.showEdges:
-            for edge in self.builtEdges:
-                edge.color = "gray"
-                edge.reDraw(self)
-        self.drawNodes()
+            if self.intCheck(edge): continue # Self Linked Node
+            edge.reDraw(self)
+            if not edge.cID: continue
+            self.builtEdges.append(edge)
 
     def intCheck(self, obj):
-        return type(next).__name__ == "int"
+        return type(obj).__name__ == "int"
+
+    def randLoc(self, num):
+        if not num: num = 1
+        diff = num / 5.0
+        if diff < 1: diff = 1
+        return random.randint(-(self.minDist ** 2), self.minDist ** 2) / diff
 
     def mapNode(self, num):
-        randX = random.randint(-(self.minDist ** 2), self.minDist ** 2)
-        randY = random.randint(-(self.minDist ** 2), self.minDist ** 2)
-        newX, newY = self.centerPoint + randX, self.centerPoint + randY
+        newX, newY = self.centerPoint + self.randLoc(num), self.centerPoint + self.randLoc(num)
         modD = self.minSize + num
         return (newX, newY, newX + modD, newY + modD)
 
@@ -119,31 +83,68 @@ class Display_GV(Tkinter.Canvas):
                 return True
         return False
 
-    def createNodes(self):
-        for node in self.parser.graphData[1].itervalues():
-            if node in self.builtNodes: continue
-            self.findEdges(node)
-            node.numEdges = len(self.tempEdges)
-            self.tempEdges = []
-            nodeCoords = None
-            while not nodeCoords or self.overlap(nodeCoords):
-                nodeCoords = self.mapNode(node.numEdges)
-            node.build(nodeCoords, self.create_oval(nodeCoords, fill="red"))
-            self.builtNodes[node.id] = node
-
     def drawNodes(self):
         for node in self.builtNodes.itervalues():
             node.reDraw(self)
 
-    def createEdges(self):
-        for edge in self.parser.graphData[2]:
-            if self.intCheck(edge): continue # Self Linked Node
-            edge.reDraw(self)
-            if not edge.cID: continue
-            self.builtEdges.append(edge)
-
-    def drawEdges(self, container):
-        for edge in container:
+    def drawEdges(self, collection):
+        for edge in collection:
             if self.intCheck(edge): continue #Self Linked Node
             edge.reDraw(self)
-#            if not edge.cID: continue
+
+    def reset(self):
+        if self.activeNode:
+            list = []
+            for edges in self.activeNode.connections.itervalues():
+                for edge in edges:
+                    if self.intCheck(edge): continue
+                    edge.color = "gray"
+                    edge.source.color = "red"
+                    edge.target.color = "red"
+                    self.delete(edge.cID)
+                    if self.showEdges:
+                        list.append(edge)
+            self.drawEdges(list)
+            self.drawNodes()
+        self.activeNode = None
+
+    def toggleEdges(self, event):
+        self.showEdges = not self.showEdges
+        if self.showEdges:
+            self.drawEdges(self.builtEdges)
+        else:
+            for edge in self.builtEdges:
+                self.delete(edge.cID)
+        self.drawNodes()
+
+    # Optimizable Methods
+    def interact(self, event):
+        for node in self.builtNodes.itervalues():
+            if node.findDistBetween((event.x, event.y)) <= node.radius:
+                if not self.activeNode:
+                    self.activeNode = node
+                    self.analyzeConnections(node)
+                return
+        if self.activeNode:
+            self.reset()
+
+    def analyzeConnections(self, node):
+        for edges in node.connections.itervalues():
+            if len(edges) == 1:
+                if self.intCheck(edges[0]): continue
+                if edges[0].source == node:
+                    edges[0].color = "green"
+                    edges[0].target.color = "green"
+                else:
+                    edges[0].color = "yellow"
+                    edges[0].source.color = "yellow"
+                edges[0].reDraw(self)
+            else:
+                for edge in edges:
+                    if self.intCheck(edge): continue
+                    edge.color = "orange"
+                    edge.target.color = "orange"
+                    edge.source.color = "orange"
+                    edge.reDraw(self)
+        node.color = "blue"
+        self.drawNodes()

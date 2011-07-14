@@ -13,10 +13,12 @@ class Node:
         self.id = id
         self.name = name
         self.numEdges = numEdges
+        self.color = "red"
         self.cID = 0
         self.loc = (None, None, None, None)
         self.center = (None, None)
         self.radius = None
+        self.connections = {}
 
     def findDistBetween(self, nodeC):
         return ((nodeC[0] - self.center[0]) ** 2 + (nodeC[1] - self.center[1]) ** 2) ** .5
@@ -46,4 +48,4 @@ class Node:
 
     def reDraw(self, canvas):
         canvas.delete(self.cID)
-        canvas.create_oval(self.loc, fill="red")
+        canvas.create_oval(self.loc, fill=self.color)

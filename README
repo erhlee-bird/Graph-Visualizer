@@ -5,44 +5,59 @@
 # Project: Graph-Visualizer                                #
 ############################################################
 
+Version 0.05:
+    Modified 07/14/11
+    : Changes were made to optimize the data storage. All
+    pertinent edges are contained within the Node so that
+    searching for them is cheap and they are easily
+    accessible for color-coding.
+    : Redid the entire drawing system and made Edges a lot
+    cheaper to draw and analyze.
+    : Redid my random drawing algorithm to favor larger
+    nodes towards the center. Looks a lot better than the
+    previous random layout.
+    : Made the program a lot more efficient overall and
+    I'm pleased with how my little "EdgeMaster" excursion
+    turned out.
+
 Version 0.04:
     Modified 07/13/11
-    :I went and corrected the color coding algorithm and
+    : I went and corrected the color coding algorithm and
     changed the storage structures for the temporary marks.
-    :Fixed the Nodes and Edges so that they can reDraw
-    themselves
-    :Got down a good method of calculating the canvas size.
-    :Gonna work a bit on the UI. So far I have the graph
+    : Fixed the Nodes and Edges so that they can reDraw
+    themselves.
+    : Got down a good method of calculating the canvas size.
+    : Gonna work a bit on the UI. So far I have the graph
     drawn and interactable in a slightly useless and arcane
     manner.
 
 Version 0.03:
     Modified 07/12/11
-    :So I realized I should have split up the info storage
+    : So I realized I should have split up the info storage
     into classes like Node.py and Edge.py but I was excited
     and kind of just rushing through so I've just added it.
-    :I changed the lists to dictionaries so I can keep the
+    : I changed the lists to dictionaries so I can keep the
     Nodes in order and have a slick way to access them.
-    :Internalized a lot of the mathematic functions to one
+    : Internalized a lot of the mathematic functions to one
     time use in the Node class. A lot less waste. I'm not
     explaining it very well but it makes sense.
-    :Who doesn't love color coding.
-    :Next up is scaling work. This is gonna be kinda hard.
+    : Who doesn't love color coding.
+    : Next up is scaling work. This is gonna be kinda hard.
 
 Version 0.02:
     Modified 07/11/11
-    :Redid the parsing work because the storage system was
+    : Redid the parsing work because the storage system was
     much too confusing and stupid.
-    :I'm doing stuff wrong. It's taking more than a few 
+    : I'm doing stuff wrong. It's taking more than a few 
     seconds to load a relatively small graph. I think I
     need to look up how to optimize my list comprehensions.
-    :Finally managed to figure out the canvas's drawing.
-    :Coming along nicely.
+    : Finally managed to figure out the canvas's drawing.
+    : Coming along nicely.
 
 Version 0.01:
     Created 07/10/11
-    :This is a basic python tool for parsing and visualizing
-    graphs
-    :Got some basic parsing support for .gexf files.
-    :Got the basic Tkinter Canvas working albeit with some
+    : This is a basic python tool for parsing and visualizing
+    graphs.
+    : Got some basic parsing support for .gexf files.
+    : Got the basic Tkinter Canvas working albeit with some
     issues with automatic resizing.
