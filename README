@@ -1,7 +1,7 @@
 ############################################################
-# Script: README                                           #
+# File: README                                             #
 # Author: Eric H. Lee (erhlee.bird@gmail.com)              #
-# Creation Date: 07/12/11                                  #
+# Creation Date: 07/11/11                                  #
 # Project: Graph-Visualizer                                #
 ############################################################
 
@@ -28,6 +28,8 @@ Version 0.06:
     work in conjunction with the Mouse Over event. Will
     reveal the node in question and list all the edges
     and connected nodes.
+    : Made the pan action right click activated and left
+    click drag the nodes around.
 
 Version 0.05:
     Modified 07/14/11

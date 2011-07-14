@@ -30,8 +30,10 @@ class Display_GV(Tkinter.Canvas):
         self.centerPoint = self.minDist ** 2 + self.minSize ** self.sizer
 
         self.bind("<Motion>", self.interact)
-        self.bind("<Button-1>", lambda(evt): self.scan_mark(evt.x, evt.y))
-        self.bind("<B1-Motion>", lambda(evt): self.scan_dragto(evt.x, evt.y, 1))
+        self.bind("<Button-1>", self.select)
+        self.bind("<B1-Motion>", self.selectedMove)
+        self.bind("<Button-2>", lambda(evt): self.scan_mark(evt.x, evt.y))
+        self.bind("<B2-Motion>", lambda(evt): self.scan_dragto(evt.x, evt.y, 1))
 
         self.createGrid()
 
@@ -180,3 +182,24 @@ class Display_GV(Tkinter.Canvas):
                     edge.reDraw(self)
         node.color = "blue"
         self.drawNodes()
+
+    def select(self, event):
+        x, y = self.convertCanvasCoords((event.x, event.y))
+        overlaps = self.find_overlapping(x, y, x, y)
+        if len(overlaps) > 0:
+            for obj in overlaps:
+                if not self.type(obj) == "oval": continue
+                for node in self.builtNodes.itervalues():
+                    if obj == node.cID:
+                        self.activeNode = node
+                        return
+
+    def selectedMove(self, event):
+        if self.activeNode:
+            x, y = self.convertCanvasCoords((event.x, event.y))
+            radius = self.activeNode.radius
+            self.activeNode.build((x - radius, y - radius, x + radius, y + radius), self.activeNode.cID)
+            for edges in self.activeNode.connections.itervalues():
+                for edge in edges:
+                    edge.reDraw(self)
+            self.activeNode.reDraw(self)
