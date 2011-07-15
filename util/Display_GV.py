@@ -13,8 +13,8 @@ import random
 class Display_GV(Tkinter.Canvas):
     """The Canvas in charge of all the visual graph effects"""
 
-    sizer = 3
-    minDist = 20
+    sizer = 2
+    minDist = 10
     minSize = 5
     activeNode = None
     showEdges = True
@@ -24,7 +24,9 @@ class Display_GV(Tkinter.Canvas):
         Tkinter.Canvas.__init__(self, parent, width=self.size, height=self.size)
 
         baseName ="Graph_Data/"
-        fileName = "photoviz dynamic.gexf"#"yeast.gexf"#"photoviz dynamic.gexf"#"example.gexf"
+        #fileName = "yeast.gexf"
+        #fileName = "photoviz dynamic.gexf"
+        fileName = "example.gexf"
         self.parser = GraphParser.GraphParser(''.join([baseName,fileName]))
 
         self.centerPoint = self.minDist ** 2 + self.minSize ** self.sizer
@@ -36,6 +38,21 @@ class Display_GV(Tkinter.Canvas):
         self.bind("<B2-Motion>", lambda(evt): self.scan_dragto(evt.x, evt.y, 1))
 
         self.createGrid()
+        self.generateMatrix()
+
+    def generateMatrix(self):
+        matrix = []
+        for id, node in self.builtNodes.items():
+            matrix.insert(id, [0] * len(self.builtNodes))
+            for edges in node.connections.itervalues():
+                if self.intCheck(edges):
+                    matrix[id][id] = 1
+                else:
+                    for edge in edges:
+                        target = edge.target if edge.source == node else edge.source
+                        matrix[id][target.id] = 1
+        print(matrix)
+
 
     # Finished Methods
     def createGrid(self):
@@ -112,6 +129,7 @@ class Display_GV(Tkinter.Canvas):
     def drawNodes(self):
         for node in self.builtNodes.itervalues():
             node.reDraw(self)
+            self.create_text(node.center, text=node.id)
 
     def drawEdges(self, collection):
         for edge in collection:
