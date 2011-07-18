@@ -5,6 +5,22 @@
 # Project: Graph-Visualizer                                #
 ############################################################
 
+Version 0.07:
+    Modified 07/18/11
+    : The Display_GV widget was getting a bit cluttered so
+    I separated some of the nonessential calculations into
+    another file Assortment_Algorithms.py
+    : Trying to work up a way to calculate exactly how much
+    space is needed to draw all the nodes. So far it works
+    okay but once you get too many nodes, it takes a long
+    time to overcome collisions so if there are too many
+    overlaps they just get drawn over each other. Need to
+    find a way to fix this.
+    : Because the number of edges gets kind of ridiculous
+    in files like yeast.gexf, I set the initial value of
+    showEdges to false so only the important edges are
+    seen.
+
 Version 0.06:
     Modified 07/14/11
     : Again some heavy optimization. Used the built in
