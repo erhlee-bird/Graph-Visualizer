@@ -18,13 +18,17 @@ class Display_GV(Tkinter.Canvas):
 
     def __init__(self, parent):
         baseName ="Graph_Data/"
-        fileName = "yeast.gexf"
-        #fileName = "photoviz dynamic.gexf"
+        #fileName = "yeast.gexf"
+        fileName = "photoviz dynamic.gexf"
         #fileName = "example.gexf"
         self.parser = GraphParser.GraphParser(''.join([baseName,fileName]))
         self.assertConstants(self.parser.graphData)
 
-        Tkinter.Canvas.__init__(self, parent, width=self.size, height=self.size)
+        if self.size > parent.winfo_screenwidth() or self.size > parent.winfo_screenheight():
+            sSize = min(parent.winfo_screenwidth(), parent.winfo_screenheight())
+            Tkinter.Canvas.__init__(self, parent, width=sSize, height=sSize)
+        else:
+            Tkinter.Canvas.__init__(self, parent, width=self.size, height=self.size)
 
         self.bind("<Motion>", lambda(evt): self.interact(*self.convertCanvasCoords((evt.x, evt.y))))
         self.bind("<B1-Motion>", lambda(evt): self.selectedMove(*self.convertCanvasCoords((evt.x, evt.y))))
