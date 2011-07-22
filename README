@@ -5,6 +5,16 @@
 # Project: Graph-Visualizer                                #
 ############################################################
 
+Version 0.08:
+    Modified 07/21/11
+    : Modified the resizing algorithm.
+    : Fixed some of the GUI interactions like the dragging
+    and hovering over.
+    : Moved some code around again and separated out the
+    pure math functions into a separate file.
+    : Refactored the code to use some more pythonic code
+    which will hopefully help with speed optimizing.
+
 Version 0.07:
     Modified 07/18/11
     : The Display_GV widget was getting a bit cluttered so

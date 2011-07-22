@@ -9,8 +9,15 @@ import random
 class Assortment_Algorithms:
     """A class in charge of calculating node placements"""
 
-    def __init__(self, info):
-        self.cSize, self.minSize, self.scale = info
+    def __init__(self, size, min, sizer):
+        self.cSize, self.minSize, self.scale = size, min, sizer
+
+    def mapNode(self, num):
+        # Determine which Graph you want to appear
+        # self.randLocRandom, self.randLocSize, self.randLocHyperbolic
+        newX, newY = self.cSize * .5 + self.randLocSize(num), self.cSize * .5 + self.randLocSize(num)
+        modD = self.minSize + num * self.scale
+        return (newX, newY, newX + modD, newY + modD)
 
     def randLocRandom(self):
         return random.randint(-(self.cSize / 2), (self.cSize / 2))
