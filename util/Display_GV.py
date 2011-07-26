@@ -36,7 +36,6 @@ class Display_GV(Tkinter.Canvas):
         self.bind("<B2-Motion>", lambda(evt): self.scan_dragto(evt.x, evt.y, 1))
 
         self.createGrid()
-        #self.generateMatrix()
 
     # Finished Methods
     def assertConstants(self, data):
@@ -49,13 +48,10 @@ class Display_GV(Tkinter.Canvas):
         for id, node in self.builtNodes.items():
             matrix.insert(id, [0] * len(self.builtNodes))
             for edges in node.connections.itervalues():
-                if type(edges).__name__ == "int":
-                    matrix[id][id] = 1
-                else:
-                    for edge in edges:
-                        target = edge.target if edge.source == node else edge.source
-                        matrix[id][target.id] = 1
-        print(matrix)
+                for edge in edges:
+                    if edge.source == node:
+                        matrix[id][edge.target.id] = 1
+        return matrix
 
     def createGrid(self):
         self.builtNodes = {}

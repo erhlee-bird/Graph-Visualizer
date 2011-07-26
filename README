@@ -5,6 +5,14 @@
 # Project: Graph-Visualizer                                #
 ############################################################
 
+Version 0.09:
+    Modified 07/26/11
+    : Always optimizing and refactoring code.
+    : Added in a tool to visualize the graph in a matrix
+    instead of graph form.
+    : Need to redo some of the nonexistent GUI to add that
+    part into the main interface.
+
 Version 0.08:
     Modified 07/21/11
     : Modified the resizing algorithm.
