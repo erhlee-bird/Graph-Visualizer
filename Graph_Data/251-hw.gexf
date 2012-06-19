@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gexf.net/1.2draft" version="1.2">
+    <meta lastmodifieddate="2009-03-20">
+        <creator>Gexf.net</creator>
+        <description>Basic graph for homework</description>
+    </meta>
+    <graph mode="static" defaultedgetype="undirected">
+        <nodes>
+            <node id="1" label="i1" />
+            <node id="2" label="i2" />
+            <node id="3" label="i3" />
+            <node id="4" label="i4" />
+            <node id="5" label="i5" />
+            <node id="6" label="o1" />
+            <node id="7" label="o2" />
+            <node id="8" label="o3" />
+            <node id="9" label="o4" />
+            <node id="10" label="o5" />
+        </nodes>
+        <edges>
+            <edge id="0" source="6" target="7" />
+            <edge id="1" source="6" target="10" />
+            <edge id="2" source="6" target="1" />
+            <edge id="3" source="7" target="8" />
+            <edge id="4" source="7" target="2" />
+            <edge id="5" source="8" target="9" />
+            <edge id="6" source="8" target="3" />
+            <edge id="7" source="9" target="10" />
+            <edge id="8" source="9" target="4" />
+            <edge id="9" source="10" target="5" />
+            <edge id="10" source="1" target="3" />
+            <edge id="11" source="1" target="4" />
+            <edge id="12" source="2" target="4" />
+            <edge id="13" source="2" target="5" />
+            <edge id="14" source="3" target="5" />
+        </edges>
+    </graph>
+</gexf>
+

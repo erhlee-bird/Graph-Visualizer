@@ -16,11 +16,8 @@ class Display_GV(Tkinter.Canvas):
     activeNode = None
     showEdges = False
 
-    def __init__(self, parent):
+    def __init__(self, parent, fileName):
         baseName ="Graph_Data/"
-        #fileName = "yeast.gexf"
-        fileName = "photoviz dynamic.gexf"
-        #fileName = "example.gexf"
         self.parser = GraphParser.GraphParser(''.join([baseName,fileName]))
         self.assertConstants(self.parser.graphData)
 
@@ -39,7 +36,7 @@ class Display_GV(Tkinter.Canvas):
 
     # Finished Methods
     def assertConstants(self, data):
-        stat = 5, 1 # MinSize, Scale
+        stat = 15, 2 # MinSize, Scale
         self.size = sum([(stat[1] + len(n.connections)) ** 2 * 3.14 for n in data[1].itervalues()]) ** .5 + len(data[1])
         self.AA = AA.Assortment_Algorithms(self.size, *stat)
 
